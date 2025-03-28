@@ -88,16 +88,27 @@ namespace ToolredMZ
                 string output = p.StandardOutput.ReadToEnd();
                 p.WaitForExit();
 
-                Match match = Regex.Match(output, $@"({ipAddress})\s+([\w-]+)");
-                return match.Success ? match.Groups[2].Value : "No encontrado";
+                // Buscar la IP en todas las líneas
+                foreach (string line in output.Split('\n'))
+                {
+                    Match match = Regex.Match(line, $@"({Regex.Escape(ipAddress)})\s+([\w-]+)\s+");
+                    if (match.Success)
+                    {
+                        return match.Groups[2].Value;
+                    }
+                }
+
+                return "No encontrado";
             }
             catch { return "No encontrado"; }
         }
-
         private string GetIpFromMac(string macAddress)
         {
             try
             {
+                // Normalizar la MAC address para comparación (eliminar todos los separadores)
+                string normalizedMac = macAddress.Replace(":", "").Replace("-", "").ToUpper();
+
                 Process p = new Process();
                 p.StartInfo.FileName = "arp";
                 p.StartInfo.Arguments = "-a";
@@ -109,8 +120,27 @@ namespace ToolredMZ
                 string output = p.StandardOutput.ReadToEnd();
                 p.WaitForExit();
 
-                Match match = Regex.Match(output, @"(\d+\.\d+\.\d+\.\d+)\s+" + macAddress.Replace("-", ":"));
-                return match.Success ? match.Groups[1].Value : "No encontrado";
+                // Procesar cada línea del output
+                foreach (string line in output.Split('\n'))
+                {
+                    // Buscar líneas que contengan una IP
+                    Match match = Regex.Match(line, @"(\d+\.\d+\.\d+\.\d+)\s+([\w-]+)\s+");
+                    if (match.Success)
+                    {
+                        string ip = match.Groups[1].Value;
+                        string macInTable = match.Groups[2].Value;
+
+                        // Normalizar la MAC de la tabla ARP
+                        string normalizedMacInTable = macInTable.Replace(":", "").Replace("-", "").ToUpper();
+
+                        if (normalizedMacInTable == normalizedMac)
+                        {
+                            return ip;
+                        }
+                    }
+                }
+
+                return "No encontrado";
             }
             catch { return "No encontrado"; }
         }
