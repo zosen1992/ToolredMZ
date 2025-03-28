@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ToolredMZ.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- Entrada de Datos -->
+            <Entry x:Name="txtDato" Placeholder="Ingrese IP, MAC o Hostname" />
+
+            <!-- Selector de Tipo de Dato -->
+            <Picker x:Name="pickerTipo" Title="Seleccione el tipo de dato">
+                <Picker.Items>
+                    <x:String>IP</x:String>
+                    <x:String>MAC Address</x:String>
+                    <x:String>Hostname</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- Botón de Búsqueda -->
+            <Button Text="Buscar" Clicked="OnBuscarClicked" />
+
+            <!-- Resultado en una Card -->
+            <Frame BackgroundColor="LightGray" Padding="15" CornerRadius="10">
+                <VerticalStackLayout>
+                    <Label Text="Resultados:" FontAttributes="Bold"/>
+                    <Label x:Name="lblIP" Text="IP: -" />
+                    <Label x:Name="lblMAC" Text="MAC: -" />
+                    <Label x:Name="lblHost" Text="Hostname: -" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
